@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lpjpro.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.lpjpro.model.user.entity.User">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="account" column="account" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="bio" column="bio" jdbcType="VARCHAR"/>
+        <result property="role" column="role" jdbcType="TINYINT"/>
+        <result property="isEmailVerified" column="is_email_verified" jdbcType="TINYINT"/>
+        <result property="isPhoneVerified" column="is_phone_verified" jdbcType="TINYINT"/>
+        <result property="isActive" column="is_active" jdbcType="TINYINT"/>
+        <result property="userLevel" column="user_level" jdbcType="TINYINT"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+        <result property="lastLoginTime" column="last_login_time" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+        <result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,account,username,
+        email,phone,password,
+        avatar,bio,role,
+        is_email_verified,is_phone_verified,is_active,
+        user_level,created_time,updated_time,
+        last_login_time,is_delete,deleted_time
+    </sql>
+    <select id="batchSelectIds" resultType="com.lpjpro.model.user.VO.UserVO">
+        <foreach collection="ids" item="id" separator="UNION ALL">
+            select id, username, email, phone, avatar, bio, user_level, created_time, last_login_time
+            from user_db.user where id = #{id}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,63 @@
+# Maven target directory
+target/
+**/target/
+
+# Test directories
+**/test/
+**/src/test/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+
+# Compiled class files
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Log files
+*.log
+logs/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Spring Boot
+spring-boot-devtools.properties
+
+# Environment specific files
+.env
+*.env.local
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Optional IDE - ignore specific Eclipse and NetBeans project files
+.metadata
+bin/
+tmp/
+*.tmp
+*.cache
+*.pid
+*.seed
+*.lock

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lpjpro.mapper.VideoMapper">
+
+    <resultMap id="BaseResultMap" type="com.lpjpro.model.video.entity.Video">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="coverUrl" column="cover_url" jdbcType="VARCHAR"/>
+            <result property="videoUrl" column="video_url" jdbcType="VARCHAR"/>
+            <result property="rawObjectKey" column="raw_object_key" jdbcType="VARCHAR"/>
+            <result property="fileSize" column="file_size" jdbcType="BIGINT"/>
+            <result property="fileFormat" column="file_format" jdbcType="VARCHAR"/>
+            <result property="resolution" column="resolution" jdbcType="VARCHAR"/>
+            <result property="duration" column="duration" jdbcType="INTEGER"/>
+            <result property="categoryId" column="category_id" jdbcType="BIGINT"/>
+            <result property="tags" column="tags" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+            <result property="transcodeStatus" column="transcode_status" jdbcType="TINYINT"/>
+            <result property="views" column="views" jdbcType="BIGINT"/>
+            <result property="likes" column="likes" jdbcType="BIGINT"/>
+            <result property="collections" column="collections" jdbcType="BIGINT"/>
+            <result property="comments" column="comments" jdbcType="BIGINT"/>
+            <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+            <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+            <result property="reviewedTime" column="reviewed_time" jdbcType="TIMESTAMP"/>
+            <result property="reviewerId" column="reviewer_id" jdbcType="BIGINT"/>
+            <result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+            <result property="fileHash" column="file_hash" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,title,
+        description,cover_url,video_url,
+        raw_object_key,file_size,file_format,
+        resolution,duration,category_id,
+        tags,status,transcode_status,
+        views,likes,collections,
+        comments,created_time,updated_time,
+        reviewed_time,reviewer_id,deleted_time,
+        is_delete,file_hash
+    </sql>
+
+    <select id="selectVideoVO" resultType="com.lpjpro.model.video.VO.VideoPageVO">
+        select id,
+        user_id,
+        description,
+        category_id,
+        cover_url,
+        likes,
+        views,
+        title,
+        reviewed_time
+        from video
+        <where>
+            status = #{key}
+            <if test="id != null and id != ''">
+                and category_id = #{id}
+            </if>
+        </where>
+        order by reviewed_time desc
+    </select>
+
+</mapper>

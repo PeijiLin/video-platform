@@ -1,0 +1,141 @@
+spring:
+  config:
+    import:
+      - optional:nacos:auth-path-config?refreshEnabled=true?group=DEFAULT_GROUP&namespace=video
+      - optional:nacos:gateway?refreshEnabled=true?group=DEFAULT_GROUP&namespace=video
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.220.138:8848
+        group: DEFAULT_GROUP
+        namespace: video
+      config:
+        server-addr: 192.168.220.138:8848
+        file-extension: yaml
+        group: DEFAULT_GROUP
+        namespace: video
+        timeout: 3000
+        refresh-enabled: true
+        encode: UTF-8
+        enabled: true
+        enable-remote-sync-config: true
+
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: '*' # 所有来源
+            allowed-headers: '*'
+            allowed-methods: '*'
+      routes:
+        - id: user-route
+          uri: lb://user-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/user/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+#            - OnceToken=token, token
+          order: 1
+
+        - id: video-route
+          uri: lb://video-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/video/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 6
+
+        - id: category-route
+          uri: lb://video-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/category/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 3
+
+        - id: likes-route
+          uri: lb://interaction-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/video/likes/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 2
+
+        - id: favorites-route
+          uri: lb://interaction-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/video/favorites/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 4
+
+        - id: comment-route
+          uri: lb://interaction-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/video/comment/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 5
+
+        - id: picture-route
+          uri: lb://data-processing-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/picture/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 7
+
+        - id: behavior-route
+          uri: lb://data-processing-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/behavior/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 8
+
+        - id: recommendation-route
+          uri: lb://recommendation-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/recommendations/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 9
+
+        - id: email-route
+          uri: lb://email-service
+          predicates:
+            - name: Path
+              args:
+                patterns: /api/email/**
+                matchTrailingSlash: true
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+          order: 10
+

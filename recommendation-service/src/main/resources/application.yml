@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: recommendation-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.220.138:8848
+        group: DEFAULT_GROUP
+        namespace: video
+      config:
+        server-addr: 192.168.220.138:8848
+        file-extension: yaml
+        group: DEFAULT_GROUP
+        namespace: video
+        timeout: 3000
+        refresh-enabled: true
+        encode: UTF-8
+        enabled: true
+        enable-remote-sync-config: true
+
+  config:
+    import:
+      - optional:nacos:recommendation?refreshEnabled=true?group=DEFAULT_GROUP&namespace=video
+
+server:
+  port: 10001
+

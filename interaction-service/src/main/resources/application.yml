@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: interaction-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.220.138:8848
+        group: DEFAULT_GROUP
+        namespace: video
+      config:
+        server-addr: 192.168.220.138:8848
+        file-extension: yaml
+        group: DEFAULT_GROUP
+        namespace: video
+        timeout: 3000
+        refresh-enabled: true
+        encode: UTF-8
+        enabled: true
+        enable-remote-sync-config: true
+
+  config:
+    import:
+      - optional:nacos:mybatis-plus?refreshEnabled=true?group=DEFAULT_GROUP&namespace=video
+      - optional:nacos:interaction?refreshEnabled=true?group=DEFAULT_GROUP&namespace=video
+
+server:
+  port: 9000
+  debug: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: '默认分组'
+      paths-to-match: '/**'
+      packages-to-scan: com.video.community
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-open-api: true

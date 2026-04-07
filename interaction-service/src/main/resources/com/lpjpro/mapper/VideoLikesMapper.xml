@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lpjpro.mapper.VideoLikesMapper">
+
+    <resultMap id="BaseResultMap" type="com.lpjpro.model.videolike.entity.VideoLikes">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="videoId" column="video_id" jdbcType="BIGINT"/>
+            <result property="likedTime" column="liked_time" jdbcType="TIMESTAMP"/>
+            <result property="isActive" column="is_active" jdbcType="TINYINT"/>
+            <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,video_id,
+        liked_time,is_active,is_delete
+    </sql>
+    <select id="batchLiked" resultType="java.lang.Boolean">
+        SELECT
+        CASE
+        WHEN vl.is_active IS NOT NULL THEN vl.is_active
+        ELSE false
+        END AS is_active
+        FROM (
+        <foreach item="videoId" collection="videoIds" separator=" UNION ALL ">
+            SELECT #{videoId} AS video_id
+        </foreach>
+        ) AS vids
+        LEFT JOIN interaction_db.video_likes vl
+        ON vl.user_id = #{userId} AND vl.video_id = vids.video_id
+    </select>
+
+</mapper>
