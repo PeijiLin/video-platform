@@ -1,7 +1,7 @@
-package com.lpjpro.feign.fallback;
+package com.lpjpro.api.video.fallback;
 
 import com.lpjpro.constant.BaseResponse;
-import com.lpjpro.feign.CategoryFeignClient;
+import com.lpjpro.api.video.CategoryFeignClient;
 import com.lpjpro.model.category.VO.CategoryVO;
 import com.lpjpro.utils.ResultUtils;
 import org.springframework.stereotype.Component;

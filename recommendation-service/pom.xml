@@ -44,8 +44,26 @@
 
         <dependency>
             <groupId>com.lpjpro</groupId>
-            <artifactId>framework-clickHouse-starter</artifactId>
+            <artifactId>framework-mybatisPlus-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lpjpro</groupId>
+            <artifactId>api-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.lpjpro</groupId>
+            <artifactId>framework-redis-starter</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
 

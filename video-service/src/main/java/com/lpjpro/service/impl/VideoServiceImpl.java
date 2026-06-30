@@ -5,10 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.clickhouse.client.api.Client;
-import com.clickhouse.client.api.command.CommandSettings;
-import com.clickhouse.client.api.data_formats.ClickHouseBinaryFormatReader;
-import com.clickhouse.client.api.query.QueryResponse;
 import com.lpjpro.api.interaction.InteractionApi;
 import com.lpjpro.api.user.UserApi;
 import com.lpjpro.constant.BaseUserInfo;
@@ -18,7 +14,9 @@ import com.lpjpro.exception.BusinessException;
 import com.lpjpro.exception.ErrorCode;
 import com.lpjpro.exception.ThrowsUtils;
 import com.lpjpro.mapper.VideoMapper;
+import com.lpjpro.mapper.UserBehaviorLogMapper;
 import com.lpjpro.model.ElasticIndex;
+import com.lpjpro.model.behavior.entity.UserBehaviorLog;
 import com.lpjpro.model.category.entity.Category;
 import com.lpjpro.model.user.VO.UserVO;
 import com.lpjpro.model.video.DTO.PageVideoRequest;
@@ -78,13 +76,13 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
     private VideoMapper videoMapper;
 
     @Resource
+    private UserBehaviorLogMapper userBehaviorLogMapper;
+
+    @Resource
     private S3VideoStorageService s3VideoStorageService;
 
     @Resource
     private VideoStorageProperties videoStorageProperties;
-
-    @Resource
-    private Client client;
 
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
@@ -291,23 +289,13 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>
         Long currentUserId = BaseUserInfo.getCurrentUserId();
         ThrowsUtils.throwIf(CommonHandle.isNull(currentUserId), ErrorCode.NOT_LOGIN_ERROR);
 
-        String sql = """
-                select videoId from user_behavior where userId = {userId:UInt64}
-                """;
-        Map<String, Object> params = new HashMap<>();
-        params.put("userId", currentUserId);
-        List<Long> videoIds = new ArrayList<>();
-        try (QueryResponse response = client.query(sql, params, new CommandSettings()).get()) {
-            ClickHouseBinaryFormatReader reader = client.newBinaryFormatReader(response);
-            while (reader.hasNext()) {
-                reader.next();
-                long videoId = reader.getLong("videoId");
-                videoIds.add(videoId);
-            }
-        } catch (Exception e) {
-            log.error("Failed to query watch history from ClickHouse", e);
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "获取观看历史失败");
-        }
+        // 从 MySQL 查询观看历史
+        List<UserBehaviorLog> logs = userBehaviorLogMapper.selectByUserIdAndPlayType(currentUserId, 200);
+        List<Long> videoIds = logs.stream()
+                .map(UserBehaviorLog::getVideoId)
+                .filter(Objects::nonNull)
+                .toList();
+
         LambdaQueryWrapper<Video> videoLambdaQueryWrapper = new LambdaQueryWrapper<>();
         videoLambdaQueryWrapper.orderByDesc(Video::getReviewedTime);
         if (!videoIds.isEmpty()) {

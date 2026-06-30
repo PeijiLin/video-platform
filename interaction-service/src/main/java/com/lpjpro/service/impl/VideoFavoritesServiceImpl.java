@@ -2,6 +2,7 @@ package com.lpjpro.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lpjpro.api.data.DataProcessingApi;
 import com.lpjpro.api.user.UserApi;
 import com.lpjpro.api.video.VideoApi;
 import com.lpjpro.constant.BaseResponse;
@@ -15,6 +16,7 @@ import com.lpjpro.model.videofavorites.DTO.VideoFavoritesRequest;
 import com.lpjpro.model.videofavorites.entity.VideoFavorites;
 import com.lpjpro.service.VideoFavoritesService;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ import java.util.List;
 * @description 针对表【video_favorites(记录用户对视频的收藏行为)】的数据库操作Service实现
 * @createDate 2025-04-21 12:48:01
 */
+@Slf4j
 @Service
 public class VideoFavoritesServiceImpl extends ServiceImpl<VideoFavoritesMapper, VideoFavorites>
     implements VideoFavoritesService {
@@ -37,6 +40,9 @@ public class VideoFavoritesServiceImpl extends ServiceImpl<VideoFavoritesMapper,
 
     @Resource
     private VideoFavoritesMapper videoFavoritesMapper;
+
+    @Resource
+    private DataProcessingApi dataProcessingApi;
 
     /**
      * 收藏
@@ -63,6 +69,13 @@ public class VideoFavoritesServiceImpl extends ServiceImpl<VideoFavoritesMapper,
         }
 
         updateFavorites(videoFavoritesRequest);
+
+        // 触发偏好更新
+        try {
+            dataProcessingApi.updatePreferenceOnFavorite(currentUserId, videoFavoritesRequest.getVideoId());
+        } catch (Exception e) {
+            log.warn("触发偏好更新失败: userId={}, videoId={}", currentUserId, videoFavoritesRequest.getVideoId(), e);
+        }
         return videoFavorites.getId();
     }
 

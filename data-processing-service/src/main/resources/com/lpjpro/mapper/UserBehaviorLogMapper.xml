@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lpjpro.mapper.UserBehaviorLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.lpjpro.model.behavior.entity.UserBehaviorLog">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="videoId" column="video_id" jdbcType="BIGINT"/>
+        <result property="categoryId" column="category_id" jdbcType="BIGINT"/>
+        <result property="behaviorType" column="behavior_type" jdbcType="VARCHAR"/>
+        <result property="watchVideoTime" column="watch_video_time" jdbcType="INTEGER"/>
+        <result property="ipAddress" column="ip_address" jdbcType="VARCHAR"/>
+        <result property="createdTime" column="created_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO user_behavior_log (user_id, video_id, category_id, behavior_type, watch_video_time, ip_address, created_time)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userId}, #{item.videoId}, #{item.categoryId}, #{item.behaviorType},
+             #{item.watchVideoTime}, #{item.ipAddress}, NOW())
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lpjpro.mapper.UserCategoryPreferenceMapper">
+
+    <resultMap id="BaseResultMap" type="com.lpjpro.model.preference.entity.UserCategoryPreference">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="categoryId" column="category_id" jdbcType="BIGINT"/>
+        <result property="watchCount" column="watch_count" jdbcType="INTEGER"/>
+        <result property="likeCount" column="like_count" jdbcType="INTEGER"/>
+        <result property="commentCount" column="comment_count" jdbcType="INTEGER"/>
+        <result property="favoriteCount" column="favorite_count" jdbcType="INTEGER"/>
+        <result property="totalWatchTime" column="total_watch_time" jdbcType="INTEGER"/>
+        <result property="score" column="score" jdbcType="DOUBLE"/>
+        <result property="updatedTime" column="updated_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="upsert">
+        INSERT INTO user_category_preference
+            (user_id, category_id, watch_count, like_count, comment_count, favorite_count, total_watch_time, score)
+        VALUES
+            (#{userId}, #{categoryId}, #{watchCount}, #{likeCount}, #{commentCount},
+             #{favoriteCount}, #{totalWatchTime}, #{score})
+        ON DUPLICATE KEY UPDATE
+            watch_count = VALUES(watch_count),
+            like_count = VALUES(like_count),
+            comment_count = VALUES(comment_count),
+            favorite_count = VALUES(favorite_count),
+            total_watch_time = VALUES(total_watch_time),
+            score = VALUES(score)
+    </insert>
+
+    <select id="selectByUserAndCategory" resultMap="BaseResultMap">
+        SELECT * FROM user_category_preference
+        WHERE user_id = #{userId} AND category_id = #{categoryId}
+        LIMIT 1
+    </select>
+
+</mapper>

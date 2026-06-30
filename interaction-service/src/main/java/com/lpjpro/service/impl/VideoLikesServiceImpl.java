@@ -2,6 +2,7 @@ package com.lpjpro.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lpjpro.api.data.DataProcessingApi;
 import com.lpjpro.api.user.UserApi;
 import com.lpjpro.api.video.VideoApi;
 import com.lpjpro.config.KafkaConfig;
@@ -19,6 +20,7 @@ import com.lpjpro.service.VideoLikesService;
 import com.lpjpro.utils.CommonHandle;
 import com.lpjpro.utils.JSONUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -36,6 +38,7 @@ import static com.lpjpro.constant.RedisConstant.USER_LIKED;
 * @description 针对表【video_likes(记录用户对视频的点赞行为)】的数据库操作Service实现
 * @createDate 2025-04-21 12:48:14
 */
+@Slf4j
 @Service
 public class VideoLikesServiceImpl extends ServiceImpl<VideoLikesMapper, VideoLikes>
     implements VideoLikesService {
@@ -54,6 +57,9 @@ public class VideoLikesServiceImpl extends ServiceImpl<VideoLikesMapper, VideoLi
 
     @Resource
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Resource
+    private DataProcessingApi dataProcessingApi;
 
 
     /**
@@ -77,6 +83,13 @@ public class VideoLikesServiceImpl extends ServiceImpl<VideoLikesMapper, VideoLi
         baseVideoLiked.setIsActive(1);
         String json = JSONUtils.toJson(baseVideoLiked);
         kafkaTemplate.send(KafkaConfig.TOPIC_VIDEO_LIKES, String.valueOf(currentUserId), json);
+
+        // 触发偏好更新
+        try {
+            dataProcessingApi.updatePreferenceOnLike(currentUserId, videoLikesRequest.getVideoId());
+        } catch (Exception e) {
+            log.warn("触发偏好更新失败: userId={}, videoId={}", currentUserId, videoLikesRequest.getVideoId(), e);
+        }
         return true;
     }
 
